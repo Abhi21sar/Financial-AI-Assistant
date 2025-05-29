@@ -1,0 +1,4 @@
+fastapi
+openai==1.68.2
+uvicorn
+

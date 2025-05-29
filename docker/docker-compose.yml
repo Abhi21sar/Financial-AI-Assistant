@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+
+  market_api_agent:
+    build: ../data_ingestion/market_api_agent
+    ports:
+      - "8001:8001"
+    environment:
+      - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY}
+
+  scraper_agent:
+    build: ../data_ingestion/scraper_agent
+    ports:
+      - "8002:8002"
+
+  retrieval_agent:
+    build: ../agents/retrieval_agent
+    ports:
+      - "8003:8003"
+
+  llm_agent:
+    build: ../agents/llm_agent
+    ports:
+      - "8004:8004"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+  voice_agent:
+    build: ../agents/voice_agent
+    ports:
+      - "8005:8005"
+    volumes:
+      - ../shared_audio:/app/shared_audio
+
+  orchestrator:
+    build: ../orchestrator
+    ports:
+      - "8000:8000"
+    environment:
+      - RETRIEVAL_AGENT_URL=http://retrieval_agent:8003
+      - LLM_AGENT_URL=http://llm_agent:8004
+      - VOICE_AGENT_URL=http://voice_agent:8005
